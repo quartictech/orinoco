@@ -7,6 +7,9 @@ import csv
 import json
 import geojson
 
+
+# See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
+
 apiRoot = 'http://localhost:6666/api'
 
 r = requests.put("{}/layer/live".format(apiRoot), json={'name': 'Arlo', 'description': "Arlo's phone"})
@@ -55,23 +58,13 @@ def post_data():
 
     r = requests.post("{}/layer/live/{}".format(apiRoot, layerId), json=geoj)
     print(r)
+    # TODO: check that we got a 2xx response
 
-    response = {
-            'id': 0,
-            'tripid': trip_id,
-            'points': point_ids,
-            'valid': True
-            }
-
-    print(json.dumps(response))
-            
-
+    pprint(stuff)
     stuff = jsonify(
             id=0,
             tripid=trip_id,
             points=point_ids,
             valid=True)
-
-    pprint(stuff)
 
     return stuff
