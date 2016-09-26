@@ -45,19 +45,36 @@ test_xml = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     </travel>
 </bwiredtravel>"""
 
-root = ET.fromstring(test_xml)
-for child in root:
-    print(child.tag, child.text)
-travel = root.find('travel')
-for child in travel:
-    print(child.tag, child.text)
-    if child.tag == 'point':
-        point = child
-        for child in point:
-            print(child.tag, child.text)
-
 def parse_xml(xml):
+    pos_info = {}
     root = ET.fromstring(xml)
+    devId = root.find('devId')
+    pos_info['devid'] = devId.text
     travel = root.find('travel')
     for child in travel:
-        print(child.tag)
+        if child.tag == 'time':
+            pos_info['time'] = child.text
+        if child.tag == 'point':
+            point = child
+            for child in point:
+                if child.tag == 'id':
+                    pos_info['pointid'] = child.text
+                elif child.tag == 'date':
+                    pos_info['date'] = child.text
+                elif child.tag == 'lat':
+                    pos_info['lat'] = child.text
+                elif child.tag == 'lon':
+                    pos_info['lon'] = child.text
+                elif child.tag == 'speed':
+                    pos_info['speed'] = child.text
+                elif child.tag == 'haccu':
+                    pos_info['speed'] = child.text
+                elif child.tag == 'vaccu':
+                    pos_info['vaccu'] = child.text
+                elif child.tag == 'bat':
+                    pos_info['bat'] = child.text
+                elif child.tag == 'altitude':
+                    pos_info['altitude'] = child.text
+    return pos_info
+
+print(parse_xml(test_xml))

@@ -21,15 +21,14 @@ if USE_PROXY:
 
 app = Flask(__name__)
 
-def prepare_geojson(value_list):
+def prepare_geojson(values):
     feature_list = []
-    for values in value_list:
-        loc = geojson.Point([float(values[4]), float(values[3])])
-        p = {'time' : int(values[0]), 'pid' : values[1], 'timestamp' : round(float(values[2])),
-                'speed' : float(values[5]), 'accuracy' : float(values[6]), 'vaccuracy' : float(values[7]),
-                'battery' : float(values[8]), 'altitude' : float(values[9])}
-        f = geojson.Feature(geometry=loc, properties=p, id=values[1])
-        feature_list.append(f)
+    loc = geojson.Point([float(values['lon']), float(values['lat'])])
+    p = {'time' : int(values['time']), 'pid' : values['pointid'], 'timestamp' : round(float(values['date'])),
+            'speed' : float(values['speed']), 'accuracy' : float(values['haccu']), 'vaccuracy' : float(values['vaccu']),
+            'battery' : float(values['bat']), 'altitude' : float(values['altitude'])}
+    f = geojson.Feature(geometry=loc, properties=p, id=values['pointid'])
+    feature_list.append(f)
     return geojson.FeatureCollection(feature_list)
 
 @app.route('/gps', methods=['POST'])
@@ -49,8 +48,10 @@ def post_data():
 
         if (len(r) == 0):
             continue
-        #TIME POINTID DATE LATITUDE LONGITUDE SPEED HACCU VACCU BAT ALTITUDE
-        pos_info = (r[8], r[3], r[12], r[13], r[14], r[15], r[17], r[18], r[19], r[20])
+        #POINTID TIME DEVID DATE LATITUDE LONGITUDE SPEED HACCU VACCU BAT ALTITUDE
+        pos_info = {'pointid' : r[11], 'time' : r[8], 'devid' : r[3], 'date' : r[12],
+                    'lat' : r[13], 'lon' : r[14], 'speed' : r[15],
+                    'haccu' : r[17], 'vaccu' : r[18], 'bat' : r[19], 'altitude' : r[20]}
         point_ids.append(int(r[11]))
         trip_id=int(r[5])
         features.append(pos_info)
