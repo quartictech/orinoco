@@ -29,7 +29,7 @@ def post_data():
     data = request.data.decode('utf-8')
     if request.headers.get('User-Agent') == 'androidSync/1.0':
         features = utils.parse_xml(data)
-        geoj = utils.prepare_geojson_from_xml(features)
+        geoj = utils.prepare_geojson_value(features)
         return_blob = utils.prepare_return_from_xml(features)
     else:
         features = utils.parse_csv(data)

@@ -3,7 +3,7 @@ import geojson
 from flask import jsonify
 import csv
 
-def prepare_geojson_from_xml(v):
+def prepare_geojson_value(v):
     feature_list = []
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
     p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
@@ -13,15 +13,10 @@ def prepare_geojson_from_xml(v):
     feature_list.append(f)
     return geojson.FeatureCollection(feature_list)
 
-def prepare_geojson(values):
+def prepare_geojson_array(values):
     feature_list = []
     for v in values:
-        loc = geojson.Point([float(v['lon']), float(v['lat'])])
-        p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
-                'speed' : float(v['speed']), 'accuracy' : float(v['haccu']), 'vaccuracy' : float(v['vaccu']),
-                'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}
-        f = geojson.Feature(geometry=loc, properties=p, id=v['pointid'])
-        feature_list.append(f)
+        feature_list.append(prepare_geojson_value(v)[0])
     return geojson.FeatureCollection(feature_list)
 
 def parse_csv(csv_data):
