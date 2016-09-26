@@ -59,6 +59,8 @@ def parse_xml(xml):
     for child in travel:
         if child.tag == 'time':
             pos_info['time'] = child.text
+        if child.tag == 'id':
+            pos_info['tripid'] = child.text
         if child.tag == 'point':
             point = child
             for child in point:
