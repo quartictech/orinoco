@@ -64,11 +64,10 @@ def post_data():
         print(r)
         # TODO: check that we got a 2xx response
 
-    pprint(stuff)
-    stuff = jsonify(
+    return_blob = jsonify(
             id=0,
             tripid=trip_id,
             points=point_ids,
             valid=True)
 
-    return stuff
+    return return_blob
