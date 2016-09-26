@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import geojson
+from flask import jsonify
 
 def prepare_geojson(values):
     feature_list = []
@@ -12,6 +13,32 @@ def prepare_geojson(values):
         feature_list.append(f)
     return geojson.FeatureCollection(feature_list)
 
+def parse_csv(csv_data):
+    data = csv.reader(csv.data.split('\n'))
+    next(data)
+    features = []
+    for r in data:
+        if (len(r) == 0):
+            continue
+        #POINTID TIME DEVID DATE LATITUDE LONGITUDE SPEED HACCU VACCU BAT ALTITUDE
+        pos_info = {'tripid' : r[5], 'pointid' : r[11], 'time' : r[8], 'devid' : r[3], 'date' : r[12],
+                    'lat' : r[13], 'lon' : r[14], 'speed' : r[15],
+                    'haccu' : r[17], 'vaccu' : r[18], 'bat' : r[19], 'altitude' : r[20]}
+        point_ids.append(int(r[10]))
+        trip_id=int(r[5])
+        features.append(pos_info)
+        return features
+
+def prepare_return(features):
+    point_ids = []
+    for f in features:
+        point_ids.append(f['pointid'])
+    return jsonify(
+        id=0,
+        tripid = features[0]['tripid'], #all points should have the same tripid
+        points = point_ids,
+        valid = True
+    )
 
 
 def parse_xml(xml):
@@ -82,5 +109,5 @@ if __name__ == "__main__":
         </travel>
     </bwiredtravel>"""
 
-    
+
     print(parse_xml(test_xml))
