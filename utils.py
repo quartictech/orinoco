@@ -33,12 +33,13 @@ def prepare_return(features):
     point_ids = []
     for f in features:
         point_ids.append(f['pointid'])
-    return jsonify(
-        id=0,
-        tripid = features[0]['tripid'], #all points should have the same tripid
-        points = point_ids,
-        valid = True
-    )
+    return (0, features[0]['tripid'], point_ids, True)
+    # return jsonify(
+    #     id=0,
+    #     tripid = features[0]['tripid'], #all points should have the same tripid
+    #     points = point_ids,
+    #     valid = True
+    # )
 
 def parse_xml(xml):
     pos_info = {}

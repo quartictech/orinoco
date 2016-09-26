@@ -41,4 +41,4 @@ def post_data():
 
     return_blob = utils.prepare_return(features)
 
-    return return_blob
+    return jsonify(return_blob[0], return_blob[1], return_blob[2], return_blob[3])
