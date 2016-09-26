@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import geojson
 
 def prepare_geojson(values):
     feature_list = []
@@ -45,7 +46,7 @@ def parse_xml(xml):
                     pos_info['altitude'] = child.text
     return pos_info
 
-if __name__ = "__main__":
+if __name__ == "__main__":
 
     test_xml = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <bwiredtravel>
