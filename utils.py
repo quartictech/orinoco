@@ -40,7 +40,6 @@ def prepare_return(features):
         valid = True
     )
 
-
 def parse_xml(xml):
     pos_info = {}
     root = ET.fromstring(xml)

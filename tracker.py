@@ -28,28 +28,7 @@ app = Flask(__name__)
 def post_data():
     data = request.data.decode('utf-8')
     features = utils.parse_csv(data)
-    # test = csv.reader(data.split('\n'))
-    #
-    # next(test)
-    #
-    # features = []
-    #
-    # point_ids = []
-    # trip_id = ''
-    #
-    # for r in test:
-    #     pprint(r)
-    #
-    #     if (len(r) == 0):
-    #         continue
-    #     #POINTID TIME DEVID DATE LATITUDE LONGITUDE SPEED HACCU VACCU BAT ALTITUDE
-    #     pos_info = {'pointid' : r[11], 'time' : r[8], 'devid' : r[3], 'date' : r[12],
-    #                 'lat' : r[13], 'lon' : r[14], 'speed' : r[15],
-    #                 'haccu' : r[17], 'vaccu' : r[18], 'bat' : r[19], 'altitude' : r[20]}
-    #     point_ids.append(int(r[11]))
-    #     trip_id=int(r[5])
-    #     features.append(pos_info)
-
+    print(request.headers)
     geoj = utils.prepare_geojson(features)
     return_blob = utils.prepare_return(features)
 
