@@ -12,11 +12,11 @@ import utils
 # See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
 
 #janky as balls - should possibly be argparse
-USE_PROXY = False
+USE_PROXY = True
 if USE_PROXY:
     apiRoot = 'http://localhost:6666/api'
 
-    r = requests.put("{}/layer/live".format(apiRoot), json={'name': 'Arlo', 'description': "Arlo's phone"})
+    r = requests.put("{}/layer/live".format(apiRoot), json={'name': 'Quartic tracking', 'description': "Quartic phones"})
     layerId = r.json()
 
 
@@ -33,7 +33,7 @@ def post_data():
         return_blob = utils.prepare_return_from_xml(features)
     else:
         features = utils.parse_csv(data)
-        geoj = utils.prepare_geojson(features)
+        geoj = utils.prepare_geojson_array(features)
         return_blob = utils.prepare_return(features)
 
     pprint(geoj)

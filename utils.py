@@ -3,14 +3,20 @@ import geojson
 from flask import jsonify
 import csv
 
+owner = {'8676860225183181212' : 'Alex',
+        '0F781721-29A9-48C5-A24E-62877E56FCB3' : 'Arlo'}
+            
+
 def prepare_feature_list(v):
     feature_list = []
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
-    p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
+    nice_id = owner.get(v['devid'], 'unknown')
+    p = {'name' : nice_id, 'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
             'speed' : float(v['speed']), 'vaccuracy' : float(v['vaccu']),
             'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}#haccu not appearing for some reason
-    f = geojson.Feature(geometry=loc, properties=p, id=v['pointid'])
+    f = geojson.Feature(geometry=loc, properties=p, id=nice_id)
     feature_list.append(f)
+    return feature_list
 
 
 def prepare_geojson_value(v):
@@ -45,7 +51,6 @@ def prepare_return_from_xml(f):
 def prepare_return(features):
     point_ids = []
     for f in features:
-        print(f)
         point_ids.append(int(f['pointid']))
     return {'id':0, 'tripid':int(features[0]['tripid']), 'points':point_ids, 'valid':True}
 
