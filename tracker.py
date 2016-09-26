@@ -6,6 +6,7 @@ from pprint import pprint
 import csv
 import json
 import geojson
+import utils
 
 
 # See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
@@ -21,16 +22,7 @@ if USE_PROXY:
 
 app = Flask(__name__)
 
-def prepare_geojson(values):
-    feature_list = []
-    for v in values:
-        loc = geojson.Point([float(v['lon']), float(v['lat'])])
-        p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
-                'speed' : float(v['speed']), 'accuracy' : float(v['haccu']), 'vaccuracy' : float(v['vaccu']),
-                'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}
-        f = geojson.Feature(geometry=loc, properties=p, id=v['pointid'])
-        feature_list.append(f)
-    return geojson.FeatureCollection(feature_list)
+
 
 @app.route('/gps', methods=['POST'])
 def post_data():
@@ -57,7 +49,7 @@ def post_data():
         trip_id=int(r[5])
         features.append(pos_info)
 
-    geoj = prepare_geojson(features)
+    geoj = utils.prepare_geojson(features)
 
     pprint(geoj)
 
