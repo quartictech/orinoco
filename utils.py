@@ -3,7 +3,7 @@ import geojson
 from flask import jsonify
 import csv
 
-def prepare_geojson_value(v):
+def prepare_feature_list(v):
     feature_list = []
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
     p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
@@ -11,12 +11,16 @@ def prepare_geojson_value(v):
             'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}#haccu not appearing for some reason
     f = geojson.Feature(geometry=loc, properties=p, id=v['pointid'])
     feature_list.append(f)
+
+
+def prepare_geojson_value(v):
+    feature_list = prepare_feature_list(v)
     return geojson.FeatureCollection(feature_list)
 
 def prepare_geojson_array(values):
     feature_list = []
     for v in values:
-        feature_list.append(prepare_geojson_value(v)[0])
+        feature_list.append(prepare_feature_list(v)[0])
     return geojson.FeatureCollection(feature_list)
 
 def parse_csv(csv_data):
