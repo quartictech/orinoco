@@ -40,5 +40,6 @@ def post_data():
         # TODO: check that we got a 2xx response
 
     return_blob = utils.prepare_return(features)
+    print(return_blob)
 
-    return jsonify(return_blob[0], return_blob[1], return_blob[2], return_blob[3])
+    return jsonify(return_blob)
