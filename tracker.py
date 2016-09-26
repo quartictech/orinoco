@@ -23,12 +23,13 @@ app = Flask(__name__)
 
 def prepare_geojson(values):
     feature_list = []
-    loc = geojson.Point([float(values['lon']), float(values['lat'])])
-    p = {'time' : int(values['time']), 'pid' : values['pointid'], 'timestamp' : round(float(values['date'])),
-            'speed' : float(values['speed']), 'accuracy' : float(values['haccu']), 'vaccuracy' : float(values['vaccu']),
-            'battery' : float(values['bat']), 'altitude' : float(values['altitude'])}
-    f = geojson.Feature(geometry=loc, properties=p, id=values['pointid'])
-    feature_list.append(f)
+    for v in values:
+        loc = geojson.Point([float(v['lon']), float(v['lat'])])
+        p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
+                'speed' : float(v['speed']), 'accuracy' : float(v['haccu']), 'vaccuracy' : float(v['vaccu']),
+                'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}
+        f = geojson.Feature(geometry=loc, properties=p, id=v['pointid'])
+        feature_list.append(f)
     return geojson.FeatureCollection(feature_list)
 
 @app.route('/gps', methods=['POST'])
