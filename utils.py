@@ -3,6 +3,16 @@ import geojson
 from flask import jsonify
 import csv
 
+def prepare_geojson_from_xml(v):
+    feature_list = []
+    loc = geojson.Point([float(v['lon']), float(v['lat'])])
+    p = {'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
+            'speed' : float(v['speed']), 'vaccuracy' : float(v['vaccu']),
+            'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}#haccu not appearing for some reason
+    f = geojson.Feature(geometry=loc, properties=p, id=v['pointid'])
+    feature_list.append(f)
+    return geojson.FeatureCollection(feature_list)
+
 def prepare_geojson(values):
     feature_list = []
     for v in values:
@@ -28,17 +38,17 @@ def parse_csv(csv_data):
         features.append(pos_info)
         return features
 
+def prepare_return_from_xml(f):
+    point_ids = []
+    point_ids.append(int(f['pointid']))
+    return {'id':0, 'tripid':int(f['tripid']), 'points':point_ids, 'valid':True}
+
 def prepare_return(features):
     point_ids = []
     for f in features:
+        print(f)
         point_ids.append(int(f['pointid']))
     return {'id':0, 'tripid':int(features[0]['tripid']), 'points':point_ids, 'valid':True}
-    # return jsonify(
-    #     id=0,
-    #     tripid = features[0]['tripid'], #all points should have the same tripid
-    #     points = point_ids,
-    #     valid = True
-    # )
 
 def parse_xml(xml):
     pos_info = {}
@@ -66,6 +76,8 @@ def parse_xml(xml):
                     pos_info['speed'] = child.text
                 elif child.tag == 'vaccu':
                     pos_info['vaccu'] = child.text
+                elif child.tag == 'haccu':
+                    pos_info['haccu'] = child.text
                 elif child.tag == 'bat':
                     pos_info['bat'] = child.text
                 elif child.tag == 'altitude':

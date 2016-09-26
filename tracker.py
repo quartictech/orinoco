@@ -27,10 +27,14 @@ app = Flask(__name__)
 @app.route('/gps', methods=['POST'])
 def post_data():
     data = request.data.decode('utf-8')
-    features = utils.parse_csv(data)
-    print(request.headers)
-    geoj = utils.prepare_geojson(features)
-    return_blob = utils.prepare_return(features)
+    if request.headers.get('User-Agent') == 'androidSync/1.0':
+        features = utils.parse_xml(data)
+        geoj = utils.prepare_geojson_from_xml(features)
+        return_blob = utils.prepare_return_from_xml(features)
+    else:
+        features = utils.parse_csv(data)
+        geoj = utils.prepare_geojson(features)
+        return_blob = utils.prepare_return(features)
 
     pprint(geoj)
 
