@@ -7,26 +7,18 @@ owner = {'8676860225183181212' : 'Alex',
         '0F781721-29A9-48C5-A24E-62877E56FCB3' : 'Arlo'}
             
 
-def prepare_feature_list(v):
-    feature_list = []
+def prepare_feature(v):
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
     nice_id = owner.get(v['devid'], 'unknown')
     p = {'name' : nice_id, 'time' : int(v['time']), 'pid' : v['pointid'], 'timestamp' : round(float(v['date'])),
             'speed' : float(v['speed']), 'vaccuracy' : float(v['vaccu']),
             'battery' : float(v['bat']), 'altitude' : float(v['altitude'])}#haccu not appearing for some reason
-    f = geojson.Feature(geometry=loc, properties=p, id=nice_id)
-    feature_list.append(f)
-    return feature_list
-
-
-def prepare_geojson_value(v):
-    feature_list = prepare_feature_list(v)
-    return geojson.FeatureCollection(feature_list)
+    return geojson.Feature(geometry=loc, properties=p, id=nice_id)
 
 def prepare_geojson_array(values):
     feature_list = []
     for v in values:
-        feature_list.append(prepare_feature_list(v)[0])
+        feature_list.append(prepare_feature(v))
     return geojson.FeatureCollection(feature_list)
 
 def parse_csv(csv_data):
@@ -43,16 +35,14 @@ def parse_csv(csv_data):
         features.append(pos_info)
         return features
 
-def prepare_return_from_xml(f):
-    point_ids = []
-    point_ids.append(int(f['pointid']))
-    return {'id':0, 'tripid':int(f['tripid']), 'points':point_ids, 'valid':True}
-
 def prepare_return(features):
     point_ids = []
     for f in features:
         point_ids.append(int(f['pointid']))
     return {'id':0, 'tripid':int(features[0]['tripid']), 'points':point_ids, 'valid':True}
+
+def prepare_error_return(features):
+    return {'id':901, 'tripid':int(features[0]['tripid']), 'points':[], 'valid':True, 'error':True, 'message':'Error hitting Weyl'} 
 
 def parse_xml(xml):
     pos_info = {}
