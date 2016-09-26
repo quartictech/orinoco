@@ -10,10 +10,13 @@ import geojson
 
 # See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
 
-apiRoot = 'http://localhost:6666/api'
+#janky as balls - should possibly be argparse
+USE_PROXY = False
+if USE_PROXY:
+    apiRoot = 'http://localhost:6666/api'
 
-r = requests.put("{}/layer/live".format(apiRoot), json={'name': 'Arlo', 'description': "Arlo's phone"})
-layerId = r.json()
+    r = requests.put("{}/layer/live".format(apiRoot), json={'name': 'Arlo', 'description': "Arlo's phone"})
+    layerId = r.json()
 
 
 app = Flask(__name__)
@@ -56,9 +59,10 @@ def post_data():
 
     pprint(geoj)
 
-    r = requests.post("{}/layer/live/{}".format(apiRoot, layerId), json=geoj)
-    print(r)
-    # TODO: check that we got a 2xx response
+    if USE_PROXY:
+        r = requests.post("{}/layer/live/{}".format(apiRoot, layerId), json=geoj)
+        print(r)
+        # TODO: check that we got a 2xx response
 
     pprint(stuff)
     stuff = jsonify(
