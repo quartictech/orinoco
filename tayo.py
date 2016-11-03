@@ -182,8 +182,11 @@ async def main_loop():
         if t >= API_DT:
             t -= API_DT
             for line_id in LINE_IDS:
-                bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
-                time_to_dest[line_id] = time_to_station(bus_arrivals[line_id], time_to_dest[line_id])
+                try:
+                    bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
+                    time_to_dest[line_id] = time_to_station(bus_arrivals[line_id], time_to_dest[line_id])
+                except:
+                    print("Error from API:"  + e)
 
         for line_id in LINE_IDS:
             eta[line_id] = estimate_to_station(bus_arrivals[line_id], going_towards[line_id], line_info[line_id], eta[line_id], ANIMATION_DT)
