@@ -211,6 +211,6 @@ async def socket(websocket, path):
         connected.remove(queue)
 
 if __name__ == "__main__":
-    start_server = websockets.serve(socket, 'localhost', 5000)
+    start_server = websockets.serve(socket, '*', 5000)
     asyncio.get_event_loop().run_until_complete(asyncio.gather(start_server, main_loop()))
     asyncio.get_event_loop().run_forever()
