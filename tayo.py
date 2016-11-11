@@ -8,8 +8,8 @@ import datetime
 import shapely.geometry as SG
 from shapely.geometry import LineString
 
+from aiohttp import web
 import asyncio
-import websockets
 
 # APP_ID="4abd99df"
 # APP_KEY="0f76ba70a21836b0991d192dceae511b"
@@ -35,7 +35,6 @@ FIELDS = [
         "lineId",
         "lineName"
 ]
-
 async def post_events(e):
     for queue in connected:
         await queue.put(e)
@@ -157,7 +156,7 @@ async def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, pa
     }
     await post_events(e)
 
-async def main_loop():
+async def main_loop(app):
     API_DT = 10
     ANIMATION_DT = 3
     LINE_IDS = ['88', '15', '9']
@@ -198,22 +197,38 @@ async def main_loop():
         await asyncio.sleep(ANIMATION_DT)
 
 
-async def socket(websocket, path):
+async def websocket_handler(request):
     print("Registering websocket")
     global connected
+
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
     # Register.
     queue = asyncio.Queue(10)
     connected.add(queue)
     try:
         while True:
             item = await queue.get()
-            await websocket.send(json.dumps(item))
+            ws.send_str(json.dumps(item))
     finally:
         # Unregister.
         print("Unregistering websocket")
         connected.remove(queue)
 
+async def start_background_tasks(app):
+    app['main_loop'] = app.loop.create_task(main_loop(app))
+
+async def cleanup_background_tasks(app):
+    app['main_loop'].cancel()
+
+async def status(request):
+    return web.Response(text="Sweet")
+
 if __name__ == "__main__":
-    start_server = websockets.serve(socket, '*', 5000)
-    asyncio.get_event_loop().run_until_complete(asyncio.gather(start_server, main_loop()))
-    asyncio.get_event_loop().run_forever()
+    app = web.Application()
+    app.on_startup.append(start_background_tasks)
+    app.on_cleanup.append(cleanup_background_tasks)
+    app.router.add_get('/healthcheck', status)
+    app.router.add_get('/ws', websocket_handler)
+    web.run_app(app)
