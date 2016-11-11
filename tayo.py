@@ -230,5 +230,5 @@ if __name__ == "__main__":
     app.on_startup.append(start_background_tasks)
     app.on_cleanup.append(cleanup_background_tasks)
     app.router.add_get('/healthcheck', status)
-    app.router.add_get('/ws', websocket_handler)
+    app.router.add_get('/tayo', websocket_handler)
     web.run_app(app)
