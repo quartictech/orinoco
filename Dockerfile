@@ -6,5 +6,5 @@ COPY requirements.txt /tayo/
 RUN pip install --no-cache-dir -r /tayo/requirements.txt
 COPY tayo.py /tayo/
 
-EXPOSE 5000
+EXPOSE 8080
 CMD [ "python", "/tayo/tayo.py" ]
