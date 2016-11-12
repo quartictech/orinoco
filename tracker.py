@@ -13,9 +13,9 @@ logging.basicConfig(level=logging.INFO)
 
 websockets = set()
 
-async def post_events(e):
+async def send_event(event):
     for ws in websockets:
-        ws.send_str(json.dumps(item))
+        ws.send_str(json.dumps(event))
 
 async def upload_handler(request):
     data = await request.text()
@@ -32,7 +32,7 @@ async def upload_handler(request):
         logging.exception("Error processing request")
         return web.HTTPBadRequest()
 
-    await post_events({
+    await send_event({
         'timestamp' : 0,
         'featureCollection' : feature_collection
     })
