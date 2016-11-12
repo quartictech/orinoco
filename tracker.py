@@ -62,5 +62,5 @@ if __name__ == "__main__":
     app = web.Application()
     app.router.add_get('/healthcheck', status)
     app.router.add_get('/tracker', websocket_handler)
-    app.router.add_post('/upload', upload_handler)
+    app.router.add_post('/tracker', upload_handler)
     web.run_app(app)
