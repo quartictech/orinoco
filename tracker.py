@@ -41,7 +41,7 @@ async def upload_handler(request):
 
 async def websocket_handler(request):
     logging.info("Registering websocket connection")
-    global connected
+    global websockets
 
     ws = web.WebSocketResponse()
     await ws.prepare(request)
