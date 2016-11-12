@@ -1,12 +1,13 @@
 import xml.etree.ElementTree as ET
 import geojson
-from flask import jsonify
 import csv
 
 OWNERS = {
     '8676860225183181212': 'Alex',
     '0F781721-29A9-48C5-A24E-62877E56FCB3': 'Arlo'
 }
+
+# See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
 
 def prepare_feature(v):
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
@@ -23,7 +24,7 @@ def prepare_feature(v):
     } #haccu not appearing for some reason
     return geojson.Feature(geometry=loc, properties=p, id=nice_id)
 
-def prepare_geojson_array(values):
+def prepare_feature_collection(values):
     feature_list = []
     for v in values:
         feature_list.append(prepare_feature(v))
