@@ -9,7 +9,7 @@ import logging
 from aiohttp import web
 import asyncio
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
 websockets = set()
 
@@ -32,6 +32,7 @@ async def upload_handler(request):
         logging.exception("Error processing request")
         return web.HTTPBadRequest()
 
+    logging.info("Processed {0} features".format(len(features)))
     await send_event({
         'timestamp' : 0,
         'featureCollection' : feature_collection
