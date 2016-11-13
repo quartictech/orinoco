@@ -2,7 +2,7 @@
 
 GPS tracker service, implemented as a server for the [Btraced](http://www.btraced.com/) mobile app.
 
-Mobile uploads should be directed at the `POST :8080/tracker` endpoint.
+Mobile uploads should be directed at the `POST :8080/upload` endpoint.
 
 ## Running locally
 
