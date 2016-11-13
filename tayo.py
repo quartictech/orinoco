@@ -7,16 +7,17 @@ import geojson
 import datetime
 import shapely.geometry as SG
 from shapely.geometry import LineString
+import logging
 
 from aiohttp import web
 import asyncio
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
 # APP_ID="4abd99df"
 # APP_KEY="0f76ba70a21836b0991d192dceae511b"
 APP_ID = "860e7675"
 APP_KEY = "1d36a20279e6ac727ddfdcaeba2e97ea"
-
-connected = set()
 
 FIELDS = [
         "stationName",
@@ -35,9 +36,12 @@ FIELDS = [
         "lineId",
         "lineName"
 ]
-async def post_events(e):
-    for queue in connected:
-        await queue.put(e)
+
+websockets = set()
+
+async def send_event(event):
+    for ws in websockets:
+        ws.send_str(json.dumps(event))
 
 def request(path, **kwargs):
     r = requests.get("https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY))
@@ -90,7 +94,7 @@ def current_stop(bus_arrival, line_info):
     try:
         return line_direction[current_stop]
     except KeyError as e:
-        print(e, line_direction)
+        logging.exception("Error")
         return None
 
 def current_stops(bus_arrivals, line_info, current):
@@ -148,13 +152,13 @@ async def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, pa
                 pos = path[line_id].interpolate(path[line_id].project(pos, normalized=True),normalized=True)#attempt to get it on the line
                 collection.append(prepare_geojson(line_id, bus_id, pos))
             except Exception as e:
-                print(e)
+                logging.exception("Error")
 
-    e = {
+    logging.info("Processed {0} features".format(len(collection)))
+    await send_event({
         'timestamp' : 0,
         'featureCollection' : geojson.FeatureCollection(collection)
-    }
-    await post_events(e)
+    })
 
 async def main_loop(app):
     API_DT = 10
@@ -177,7 +181,6 @@ async def main_loop(app):
 
     t = 0
     while True:
-        print("processing time step")
         if t >= API_DT:
             t -= API_DT
             for line_id in LINE_IDS:
@@ -185,7 +188,7 @@ async def main_loop(app):
                     bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
                     time_to_dest[line_id] = time_to_station(bus_arrivals[line_id], time_to_dest[line_id])
                 except Exception as e:
-                    print("Error from API", e)
+                    logging.exception("Error from API")
 
         for line_id in LINE_IDS:
             eta[line_id] = estimate_to_station(bus_arrivals[line_id], going_towards[line_id], line_info[line_id], eta[line_id], ANIMATION_DT)
@@ -198,23 +201,20 @@ async def main_loop(app):
 
 
 async def websocket_handler(request):
-    print("Registering websocket")
-    global connected
+    logging.info("Registering websocket connection")
+    global websockets
 
     ws = web.WebSocketResponse()
     await ws.prepare(request)
+    websockets.add(ws)
 
-    # Register.
-    queue = asyncio.Queue(10)
-    connected.add(queue)
-    try:
-        while True:
-            item = await queue.get()
-            ws.send_str(json.dumps(item))
-    finally:
-        # Unregister.
-        print("Unregistering websocket")
-        connected.remove(queue)
+    async for msg in ws:
+        pass
+
+    logging.info("Unregistering websocket connection")
+    websockets.remove(ws)
+
+    return ws
 
 async def start_background_tasks(app):
     app['main_loop'] = app.loop.create_task(main_loop(app))
