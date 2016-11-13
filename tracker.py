@@ -1,48 +1,66 @@
-from flask import Flask
-from flask import request
-from flask import jsonify
 import requests
-from pprint import pprint
 import math
 import csv
 import json
 import geojson
 import utils
+import logging
 
+from aiohttp import web
+import asyncio
 
-# See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
+logging.basicConfig(level=logging.INFO)
 
-#janky as balls - should possibly be argparse
-USE_PROXY = True
-if USE_PROXY:
-    apiRoot = 'http://localhost:6666/api'
+websockets = set()
 
-app = Flask(__name__)
+async def send_event(event):
+    for ws in websockets:
+        ws.send_str(json.dumps(event))
 
+async def upload_handler(request):
+    data = await request.text()
 
+    try:
+        if request.headers.get('User-Agent') == 'androidSync/1.0':
+            features = [utils.parse_xml(data)]
+        else:
+            features = utils.parse_csv(data)
 
-@app.route('/gps', methods=['POST'])
-def post_data():
-    data = request.data.decode('utf-8')
-    if request.headers.get('User-Agent') == 'androidSync/1.0':
-        features = [utils.parse_xml(data)]
-    else:
-        features = utils.parse_csv(data)
+        feature_collection = utils.prepare_feature_collection(features)
+        ret = utils.prepare_return(features)
+    except Exception as e:
+        logging.exception("Error processing request")
+        return web.HTTPBadRequest()
 
-    geoj = utils.prepare_geojson_array(features)
-    pprint(geoj)
+    await send_event({
+        'timestamp' : 0,
+        'featureCollection' : feature_collection
+    })
 
-    return_blob = utils.prepare_return(features)
+    return web.Response(text=json.dumps(ret))
 
-    if USE_PROXY:
-        r = requests.post("{}/layer/live/{}".format(apiRoot, "12345678"), json={
-            'name': 'Quartic tracking',
-            'description': 'Quartic phones',
-            'featureCollection': geoj
-        })
-        print(r)
-        if (math.floor(r.status_code / 100) != 2):
-            return_blob = utils.prepare_error_return(features)
+async def websocket_handler(request):
+    logging.info("Registering websocket connection")
+    global websockets
 
-    print(return_blob)
-    return jsonify(return_blob)
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+    websockets.add(ws)
+
+    async for msg in ws:
+        pass
+
+    logging.info("Unregistering websocket connection")
+    websockets.remove(ws)
+
+    return ws
+
+async def status(request):
+    return web.Response(text="Sweet")
+
+if __name__ == "__main__":
+    app = web.Application()
+    app.router.add_get('/healthcheck', status)
+    app.router.add_get('/tracker', websocket_handler)
+    app.router.add_post('/tracker', upload_handler)
+    web.run_app(app)

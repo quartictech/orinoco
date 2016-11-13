@@ -1,2 +1,6 @@
 __pycache__
-env
+.env/
+.gradle/
+build/
+*.pyc
+.DS_Store
