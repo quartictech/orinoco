@@ -9,17 +9,33 @@ OWNERS = {
 
 # See http://www.btraced.com/Btraced%20Protocol%20v1.1.4.pdf for the Btraced protocol
 
+series = {}
+
+def update_and_format_timeseries(id, key, new_value):
+    my_series = series.get(id, {}).get(key, [])
+    my_series.append(new_value)
+    if id in series:
+        series[id][key] = my_series
+    else:
+        series[id] = { key: my_series }
+
+    return {
+        "type": "timeseries",
+        "series": my_series
+    }
+
 def prepare_feature(v):
+    id = v['devid']
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
-    nice_id = OWNERS.get(v['devid'], 'unknown')
+    nice_id = OWNERS.get(id, 'unknown')
     p = {
         'name':         nice_id,
         'time':         int(v['time']),
         'pid':          v['pointid'],
         'timestamp':    round(float(v['date'])),
-        'speed':        float(v['speed']),
+        'speed':        update_and_format_timeseries(id, 'speed', float(v['speed'])),
         'vaccuracy':    float(v['vaccu']),
-        'battery':      float(v['bat']),
+        'battery':      update_and_format_timeseries(id, 'battery', float(v['bat'])),
         'altitude':     float(v['altitude'])
     } #haccu not appearing for some reason
     return geojson.Feature(geometry=loc, properties=p, id=nice_id)
@@ -98,8 +114,6 @@ def parse_xml(xml):
                 elif child.tag == 'lon':
                     pos_info['lon'] = child.text
                 elif child.tag == 'speed':
-                    pos_info['speed'] = child.text
-                elif child.tag == 'haccu':
                     pos_info['speed'] = child.text
                 elif child.tag == 'vaccu':
                     pos_info['vaccu'] = child.text
