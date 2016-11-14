@@ -11,9 +11,12 @@ OWNERS = {
 
 series = {}
 
-def update_and_format_timeseries(id, key, new_value):
+def update_and_format_timeseries(id, key, timestamp, new_value):
     my_series = series.get(id, {}).get(key, [])
-    my_series.append(new_value)
+    my_series.append({
+        "timestamp": round(timestamp * 1000),
+        "value": new_value
+    })
     if id in series:
         series[id][key] = my_series
     else:
@@ -26,16 +29,17 @@ def update_and_format_timeseries(id, key, new_value):
 
 def prepare_feature(v):
     id = v['devid']
+    timestamp = float(v['date'])
     loc = geojson.Point([float(v['lon']), float(v['lat'])])
     nice_id = OWNERS.get(id, 'unknown')
     p = {
         'name':         nice_id,
         'time':         int(v['time']),
         'pid':          v['pointid'],
-        'timestamp':    round(float(v['date'])),
-        'speed':        update_and_format_timeseries(id, 'speed', float(v['speed'])),
+        'timestamp':    round(timestamp),
+        'speed':        update_and_format_timeseries(id, 'speed', timestamp, float(v['speed'])),
         'vaccuracy':    float(v['vaccu']),
-        'battery':      update_and_format_timeseries(id, 'battery', float(v['bat'])),
+        'battery':      update_and_format_timeseries(id, 'battery', timestamp, float(v['bat'])),
         'altitude':     float(v['altitude'])
     } #haccu not appearing for some reason
     return geojson.Feature(geometry=loc, properties=p, id=nice_id)
