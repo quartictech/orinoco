@@ -106,5 +106,5 @@ if __name__ == "__main__":
     app.on_startup.append(start_background_tasks)
     app.on_cleanup.append(cleanup_background_tasks)
     app.router.add_get('/healthcheck', status)
-    app.router.add_get('/ng', websocket_handler)
-    web.run_app(app, port=9000)
+    app.router.add_get('/national-grid', websocket_handler)
+    web.run_app(app)
