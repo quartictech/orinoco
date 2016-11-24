@@ -72,7 +72,7 @@ async def main_loop(app):
             if dirty:
                 await send_time_series(key, time_series)
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(10)
 
 async def websocket_handler(request):
     logging.info("Registering websocket connection")
