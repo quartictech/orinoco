@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y libgeos-dev
 COPY requirements.txt /national-grid/
 RUN pip install --no-cache-dir -r /national-grid/requirements.txt
 COPY national-grid.py /national-grid/
+COPY utils.py /national-grid/
 COPY data /
 
 EXPOSE 8080
