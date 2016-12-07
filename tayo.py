@@ -44,7 +44,8 @@ async def send_event(event):
         ws.send_str(json.dumps(event))
 
 def request(path, **kwargs):
-    r = requests.get("https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY))
+    url = "https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY)
+    r = requests.get(url, timeout=60)
     return r.json()
 
 def lookup_station(station_id, station_locs={}):
