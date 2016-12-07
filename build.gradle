@@ -1,9 +1,8 @@
 plugins {
-    id "com.palantir.git-version" version "0.5.2"
     id "com.palantir.docker" version "0.9.1"
 }
 
-version gitVersion()
+version (System.env.CIRCLE_BUILD_NUM ?: "unknown")
 
 docker {
     name    "${System.env.QUARTIC_DOCKER_REPOSITORY}/${project.name}:${version}"
