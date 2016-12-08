@@ -141,12 +141,18 @@ class Bus:
 
     def _previous_stop(self):
         stations = self.line_info.stations(self.arrival_info.direction)
-        next_index = list(stations.keys()).index(self.arrival_info.dest_id)
-        return list(stations.values())[max(next_index-1, 0)]
+        try:
+            next_index = list(stations.keys()).index(self.arrival_info.dest_id)
+            return list(stations.values())[max(next_index-1, 0)]
+        except:
+            raise RuntimeError("Could not find station {}".format(self.arrival_info.dest_id))
 
     def _current_stop(self):
         stations = self.line_info.stations(self.arrival_info.direction)
-        return stations[self.arrival_info.dest_id]
+        try:
+            return stations[self.arrival_info.dest_id]
+        except:
+            raise RuntimeError("Could not find station {}".format(self.arrival_info.dest_id))
 
     def _get_position(self, a, b, proportion):
         segment = LineString(((a.lon, a.lat), (b.lon, b.lat)))
@@ -188,7 +194,7 @@ class Line:
             try:
                 features.append(bus.to_geojson_feature())
             except Exception as e:
-                logging.exception("Could not calculate new position for bus {} on line {}".format(bus.id, self.id))
+                logging.exception("Could not calculate position for bus {} on line {}".format(bus.id, self.id))
         return features
 
     def _get_bus_info(self):
