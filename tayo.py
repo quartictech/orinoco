@@ -1,3 +1,4 @@
+import argparse
 import requests
 import json
 import functools
@@ -125,16 +126,18 @@ class Bus:
             })
 
     def _interpolated_position(self):
+        logging.debug("[{}] {} ({} -> {})".format(self.id, self.arrival_info.direction, self._previous_stop(), self._current_stop()))
+
         previous = self._previous_stop()
         current = self._current_stop()
         proportion = self.eta / self.leg_time
 
-        logging.debug("[{}] {} ({} -> {})".format(self.id, self.arrival_info.direction, self._previous_stop(), self._current_stop()))
-
         path = self.line_info.path(self.arrival_info.direction)
-        pos = self._get_position(current, previous, proportion)
-        pos = path.interpolate(path.project(pos, normalized=True), normalized=True)
-        return pos
+        return path.interpolate(
+            path.project(
+                self._get_position(current, previous, proportion),
+                normalized=True),
+            normalized=True)
 
     def _previous_stop(self):
         stations = self.line_info.stations(self.arrival_info.direction)
@@ -186,19 +189,16 @@ class Line:
                 features.append(bus.to_geojson_feature())
             except Exception as e:
                 logging.exception("Could not calculate new position for bus {} on line {}".format(bus.id, self.id))
-
         return features
 
     def _get_bus_info(self):
+        # The API returns predictions multiple stops ahead for each bus, so we have to extract the nearest one per bus
         bus_info = {}
         for p in self.api.get_arrival_predictions(self.id):
             bus_id = p["vehicleId"]
-            info = ArrivalInfo(p["naptanId"], p["direction"], p["timeToStation"])
+            bus_info[bus_id] = bus_info.get(bus_id, [])
+            bus_info[bus_id].append(ArrivalInfo(p["naptanId"], p["direction"], p["timeToStation"]))
 
-            if bus_id in bus_info.keys():
-                bus_info[bus_id].append(info)
-            else:
-                bus_info[bus_id] = [info]
         return {bus_id: min(infos, key=lambda k: k.time_to_dest) for bus_id, infos in bus_info.items()}
 
 
@@ -216,7 +216,6 @@ def process_line(line, t):
         line.update_from_api()
     else:
         line.update_by_extrapolating()
-
     return line.to_geojson_features()
 
 async def main_loop(app):
@@ -229,11 +228,10 @@ async def main_loop(app):
         features = list(itertools.chain.from_iterable(feature_lists))
 
         logging.info("Processed {0} features".format(len(features)))
-        event = {
+        await send_event({
             'timestamp' : 0,
             'featureCollection' : geojson.FeatureCollection(features)
-        }
-        await send_event(event)
+        })
 
         if t >= API_DT:
             t -= API_DT
@@ -265,12 +263,21 @@ async def cleanup_background_tasks(app):
 async def status(request):
     return web.Response(text="Sweet")
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Acquire TfL bus positions.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-p", "--port", type=int, help="Port to serve on", default=8080)
+    return parser.parse_args()
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
+
+    args = parse_args()
 
     app = web.Application()
     app.on_startup.append(start_background_tasks)
     app.on_cleanup.append(cleanup_background_tasks)
     app.router.add_get('/healthcheck', status)
     app.router.add_get('/tayo', websocket_handler)
-    web.run_app(app)
+    web.run_app(app, port=args.port)
