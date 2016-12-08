@@ -1,15 +1,15 @@
 import argparse
-import requests
 import json
 import functools
 import itertools
 import geojson
 import logging
 import asyncio
+import time
 
 from collections import OrderedDict
 from shapely.geometry import LineString
-from aiohttp import web
+from aiohttp import web, ClientSession
 from pprint import pprint
 
 
@@ -24,22 +24,19 @@ LINE_IDS = ["88", "15", "9"]
 
 class Api:
     def __init__(self):
-        self.session = requests.Session()
+        self.session = ClientSession()
 
-    def get_stop(self, stop_id):
-        return self._request("/StopPoint/{}".format(stop_id))
+    async def get_line(self, line_id, direction):
+        return await self._request("/Line/{}/Route/Sequence/{}".format(line_id, direction))
 
-    def get_line(self, line_id, direction):
-        return self._request("/Line/{}/Route/Sequence/{}".format(line_id, direction))
+    async def get_arrival_predictions(self, line_id):
+        return await self._request("/line/{0}/arrivals".format(line_id))
 
-    def get_arrival_predictions(self, line_id):
-        return self._request("/line/{0}/arrivals".format(line_id))
-
-    def _request(self, path, **kwargs):
+    async def _request(self, path, **kwargs):
         url = "https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY)
-        r = self.session.get(url, timeout=60)
-        r.raise_for_status()
-        return r.json()
+        async with self.session.get(url, timeout=60) as r:
+            r.raise_for_status()
+            return await r.json()
 
 
 ##############################################################################
@@ -57,13 +54,18 @@ class StationInfo:
 ##############################################################################
 
 class LineInfo:
-    def __init__(self, api, id):
+    @classmethod
+    async def create(cls, api, id):
+        self = LineInfo()
         self.id = id
-        self.api = api
+        self.lines = {
+            "inbound": await api.get_line(id, "inbound"),
+            "outbound": await api.get_line(id, "outbound")
+        }
+        return self
 
-    @functools.lru_cache()
     def stations(self, direction):
-        r = self._get_line(direction)
+        r = self.lines[direction]
         stations = OrderedDict()
         logging.debug("--- {} ---".format(direction))
         for stop in r['stopPointSequences'][0]['stopPoint']:
@@ -71,16 +73,11 @@ class LineInfo:
             stations[stop['id']] = StationInfo(stop["name"], stop["lat"], stop["lon"])
         return stations
 
-    @functools.lru_cache()
     def path(self, direction):
-        r = self._get_line(direction)
+        r = self.lines[direction]
         assert len(r['lineStrings']) == 1
         assert len(json.loads(r['lineStrings'][0])) == 1
         return LineString(json.loads(r['lineStrings'][0])[0])
-
-    @functools.lru_cache()
-    def _get_line(self, direction):
-        return self.api.get_line(self.id, direction)
 
 
 ##############################################################################
@@ -165,17 +162,20 @@ class Bus:
 ##############################################################################
 
 class Line:
-    def __init__(self, api, id):
+    @classmethod
+    async def create(cls, api, id):
+        self = Line()
         self.id = id
         self.api = api
-        self.line_info = LineInfo(api, id)
+        self.line_info = await LineInfo.create(api, id)
         self.buses = {}
+        return self
 
-    def update_from_api(self):
+    async def update_from_api(self):
         try:
-            info_for_buses = self._get_bus_info()
+            info_for_buses = await self._get_bus_info()
         except Exception as e:
-            logging.exception("Could not get info from API for line {}".format(id))
+            logging.exception("Could not get info from API for line {}".format(self.id))
             return
 
         for bus_id, bus_info in info_for_buses.items():
@@ -200,10 +200,10 @@ class Line:
                 logging.exception("Could not calculate position for bus {} on line {}".format(bus.id, self.id))
         return features
 
-    def _get_bus_info(self):
+    async def _get_bus_info(self):
         # The API returns predictions multiple stops ahead for each bus, so we have to extract the nearest one per bus
         bus_info = {}
-        for p in self.api.get_arrival_predictions(self.id):
+        for p in await self.api.get_arrival_predictions(self.id):
             bus_id = p["vehicleId"]
             bus_info[bus_id] = bus_info.get(bus_id, [])
             bus_info[bus_id].append(ArrivalInfo(p["naptanId"], p["direction"], p["timeToStation"]))
@@ -219,21 +219,21 @@ async def send_event(event):
     for ws in websockets:
         ws.send_str(json.dumps(event))
 
-# TODO: propagate async
-def process_line(line, t):
+async def process_line(line, t):
     if (t >= API_DT):
-        line.update_from_api()
+        await line.update_from_api()
     else:
         line.update_by_extrapolating()
     return line.to_geojson_features()
 
 async def main_loop(app):
     api = Api()
-    lines = [Line(api, id) for id in LINE_IDS]
+    await Line.create(api, "9")
+    lines = [await Line.create(api, id) for id in LINE_IDS]
 
     t = API_DT
     while True:
-        feature_lists = [process_line(line, t) for line in lines]
+        feature_lists = [await process_line(line, t) for line in lines]
         features = list(itertools.chain.from_iterable(feature_lists))
 
         logging.info("Processed {0} features".format(len(features)))
