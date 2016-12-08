@@ -161,42 +161,135 @@ async def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, pa
         'featureCollection' : geojson.FeatureCollection(collection)
     })
 
-async def main_loop(app):
-    API_DT = 10
-    ANIMATION_DT = 3
-    LINE_IDS = ['88', '15', '9']
+##############################################################################
 
-    line_info = {}
-    path = {}
-    bus_arrivals = {}
-    going_towards = {}
-    eta = {}
-    time_to_dest = {}
+class Api:
+    def get_stop(self, stop_id):
+        return self._request("/StopPoint/{}".format(stop_id))
+
+    def get_line(line_id, direction):
+        return self._request("/Line/{}/Route/Sequence/{}".format(line_id, direction))
+
+    def get_arrival_predictions(self, line_id):
+        return self._request("/line/{0}/arrivals".format(line_id))
+
+    def _request(self, path, **kwargs):
+        url = "https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY)
+        r = requests.get(url, timeout=60)
+        return r.json()
+
+##############################################################################
+
+class LineInfo:
+    def __init__(self, api, id):
+        self.id = id
+        self.api = api
+
+    @functools.lru_cache
+    def get_stations(self, direction):
+        r = self._get_line(direction)
+        stations = OrderedDict()
+        for stop in r['stopPointSequences'][0]['stopPoint']:
+            stations[stop['id']] = (stop['name'], stop['lat'], stop['lon'])
+        return stations
+
+    @functools.lru_cache
+    def path(self, direction):
+        r = self._get_line(direction)
+        assert len(r['lineStrings']) == 1
+        assert len(json.loads(r['lineStrings'][0])) == 1
+        return LineString(json.loads(r['lineStrings'][0])[0])
+
+    @functools.lru_cache
+    def _get_line(self, direction):
+        return self.api.get_line(self.id, direction)
+
+##############################################################################
+
+class Bus:
+    def __init__(self, id, line_id, line_info):
+        self.id = id
+        self.line_id = id
+        self.line_info = line_info
+        self.eta = XXX # TODO
+        self.time_to_dest = XXX # TODO
+
+    def update_estimate(self):
+        # TODO
+
+    def to_geojson_feature(self):
+        return geojson.Feature(
+            id=id,
+            geometry=self._interpolated_position(),
+            properties={
+                'vehicle id': self.id,
+                'route': self.line_id
+            })
+
+    def _interpolated_position(self):
+        # TODO: what is bus_arrival?
+        previous = self.line_info.previous_stop(bus_arrival)
+        current = self.line_info.current_stop(bus_arrival)
+        proportion = self.eta / self.time_to_dest
+
+        pos = self._get_position(current, previous, proportion)
+        pos = self.line_info.path().interpolate(
+            self.line_info.path().project(pos, normalized=True),
+            normalized=True
+        )
+
+    def _get_position(a, b, proportion):
+        segment = LineString(((a[2], a[1]), (b[2], b[1])))
+        return segment.interpolate(distance=proportion, normalized=True)
+
+
+
+
+
+##############################################################################
+
+class Line:
+    def __init__(self, id):
+        self.id = id
+        self.buses = {}
+        # TODO: get line info
+
+    def update_from_api(self):
+        # TODO: get updates from API
+        predictions = XXX
+
+        # TODO: propagate updates to individual buses (creating/deleting as necessary)
+
+    def update_estimates(self):
+        for bus in self.buses:
+            bus.update_estimate()
+
+
+
+def main_loop:
+    for line in lines:
+        if (t >= API_DT):
+            line.update_from_api()
+
+        line.update_estimates()
+        line.send_geojson()
+
+async def main_loop(app):
+    all_states = {}
     for line_id in LINE_IDS:
-        line_info[line_id] = lookup_line(line_id)
-        path[line_id] = lookup_line_path(line_id, 'inbound')
-        bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
-        going_towards[line_id] = current_stops(bus_arrivals[line_id], line_info[line_id], {})
-        eta[line_id] = {}#tracks estimated time to next dest
-        time_to_dest[line_id] = {} #tracks total time to next dest
+        all_states[line_id] = initialise(line_id)
 
     t = 0
     while True:
+        for line_id, line_state in all_states:
+            if t >= API_DT:
+                update_from_api(line_id, line_state)
+
+            update_estimates(line_id, line_state)
+            await send_geojson(line_id, line_state)
+
         if t >= API_DT:
             t -= API_DT
-            for line_id in LINE_IDS:
-                try:
-                    bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
-                    time_to_dest[line_id] = time_to_station(bus_arrivals[line_id], time_to_dest[line_id])
-                except Exception as e:
-                    logging.exception("Error from API")
-
-        for line_id in LINE_IDS:
-            eta[line_id] = estimate_to_station(bus_arrivals[line_id], going_towards[line_id], line_info[line_id], eta[line_id], ANIMATION_DT)
-            going_towards[line_id] = current_stops(bus_arrivals[line_id], line_info[line_id], going_towards[line_id])
-
-        await prepare_event(LINE_IDS, line_info, bus_arrivals, time_to_dest, eta, path)
-
         t += ANIMATION_DT
         await asyncio.sleep(ANIMATION_DT)
 
