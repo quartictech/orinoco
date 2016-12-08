@@ -145,14 +145,14 @@ class Bus:
             next_index = list(stations.keys()).index(self.arrival_info.dest_id)
             return list(stations.values())[max(next_index-1, 0)]
         except:
-            raise RuntimeError("Could not find station {}".format(self.arrival_info.dest_id))
+            raise RuntimeError("Could not find station {}".format(self.arrival_info.dest_id)) from None
 
     def _current_stop(self):
         stations = self.line_info.stations(self.arrival_info.direction)
         try:
             return stations[self.arrival_info.dest_id]
         except:
-            raise RuntimeError("Could not find station {}".format(self.arrival_info.dest_id))
+            raise RuntimeError("Could not find station {}".format(self.arrival_info.dest_id)) from None
 
     def _get_position(self, a, b, proportion):
         segment = LineString(((a.lon, a.lat), (b.lon, b.lat)))
