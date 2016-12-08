@@ -23,6 +23,9 @@ LINE_IDS = ["88", "15", "9"]
 ##############################################################################
 
 class Api:
+    def __init__(self):
+        self.session = requests.Session()
+
     def get_stop(self, stop_id):
         return self._request("/StopPoint/{}".format(stop_id))
 
@@ -34,7 +37,7 @@ class Api:
 
     def _request(self, path, **kwargs):
         url = "https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY)
-        r = requests.get(url, timeout=60)
+        r = self.session.get(url, timeout=60)
         r.raise_for_status()
         return r.json()
 
