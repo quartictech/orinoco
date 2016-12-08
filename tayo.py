@@ -1,11 +1,9 @@
 import argparse
 import json
-import functools
 import itertools
 import geojson
 import logging
 import asyncio
-import time
 
 from collections import OrderedDict
 from shapely.geometry import LineString
