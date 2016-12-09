@@ -236,7 +236,7 @@ async def process_line(line, t):
     return line.to_geojson_features()
 
 async def main_loop(app):
-    lines = create_lines()
+    lines = await create_lines()
 
     t = API_DT
     while True:
