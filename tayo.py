@@ -32,7 +32,7 @@ class Api:
 
     async def _request(self, path, **kwargs):
         url = "https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY)
-        async with self.session.get(url, timeout=60) as r:
+        async with self.session.get(url, timeout=20) as r:
             r.raise_for_status()
             return await r.json()
 
@@ -120,7 +120,8 @@ class Bus:
             geometry=self._interpolated_position(),
             properties={
                 'vehicle id': self.id,
-                'route': self.line_info.id
+                'route': self.line_info.id,
+                'next stop': self._current_stop().name
             })
 
     def _interpolated_position(self):
@@ -217,6 +218,16 @@ async def send_event(event):
     for ws in websockets:
         ws.send_str(json.dumps(event))
 
+async def create_lines():
+    api = Api()
+    while True:
+        try:
+            lines = [await Line.create(api, id) for id in LINE_IDS]
+            break
+        except Exception as e:
+            logging.exception("Could not retrieve line info")
+    return lines
+
 async def process_line(line, t):
     if (t >= API_DT):
         await line.update_from_api()
@@ -225,9 +236,7 @@ async def process_line(line, t):
     return line.to_geojson_features()
 
 async def main_loop(app):
-    api = Api()
-    await Line.create(api, "9")
-    lines = [await Line.create(api, id) for id in LINE_IDS]
+    lines = create_lines()
 
     t = API_DT
     while True:
