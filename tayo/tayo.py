@@ -7,8 +7,10 @@ import asyncio
 
 from collections import OrderedDict
 from shapely.geometry import LineString
-from aiohttp import web, ClientSession
+from aiohttp import ClientSession
 from pprint import pprint
+
+from orinoco import create_app
 
 
 APP_ID = "860e7675"
@@ -212,12 +214,6 @@ class Line:
 
 ##############################################################################
 
-websockets = set()
-
-async def send_event(event):
-    for ws in websockets:
-        ws.send_str(json.dumps(event))
-
 async def create_lines():
     api = Api()
     while True:
@@ -235,7 +231,7 @@ async def process_line(line, t):
         line.update_by_extrapolating()
     return line.to_geojson_features()
 
-async def main_loop(app):
+async def main_loop():
     lines = await create_lines()
 
     t = API_DT
@@ -244,56 +240,18 @@ async def main_loop(app):
         features = list(itertools.chain.from_iterable(feature_lists))
 
         logging.info("Processed {0} features".format(len(features)))
-        await send_event({
+        yield {
             'timestamp' : 0,
             'featureCollection' : geojson.FeatureCollection(features)
-        })
+        }
 
         if t >= API_DT:
             t -= API_DT
         t += ANIMATION_DT
         await asyncio.sleep(ANIMATION_DT)
 
-async def websocket_handler(request):
-    logging.info("Registering websocket connection")
-    global websockets
-
-    ws = web.WebSocketResponse()
-    await ws.prepare(request)
-    websockets.add(ws)
-
-    async for msg in ws:
-        pass
-
-    logging.info("Unregistering websocket connection")
-    websockets.remove(ws)
-
-    return ws
-
-async def start_background_tasks(app):
-    app['main_loop'] = app.loop.create_task(main_loop(app))
-
-async def cleanup_background_tasks(app):
-    app['main_loop'].cancel()
-
-async def status(request):
-    return web.Response(text="Sweet")
-
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Acquire TfL bus positions.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-p", "--port", type=int, help="Port to serve on", default=8080)
-    return parser.parse_args()
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
-    args = parse_args()
-
-    app = web.Application()
-    app.on_startup.append(start_background_tasks)
-    app.on_cleanup.append(cleanup_background_tasks)
-    app.router.add_get('/healthcheck', status)
-    app.router.add_get('/tayo', websocket_handler)
-    web.run_app(app, port=args.port)
+    app = create_app("tayo", main_loop)
+    app.run()
