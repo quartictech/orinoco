@@ -1,4 +1,4 @@
-FROM python:3.5.2-alpine
+FROM orinoco:latest
 
 COPY requirements.txt /tracker/
 RUN pip install --no-cache-dir -r /tracker/requirements.txt

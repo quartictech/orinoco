@@ -1,4 +1,4 @@
-FROM python:3.6.0rc1
+FROM orinoco:latest
 
 RUN apt-get update && apt-get install -y libgeos-dev
 
