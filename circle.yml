@@ -11,4 +11,4 @@ deployment:
     branch: /.*/
     commands:
       - curl https://raw.githubusercontent.com/quartictech/circleci-utils/develop/circleci-gcloud-login | bash
-      - ./scripts/build.sh
+      - ./build.sh
