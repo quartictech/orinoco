@@ -7,6 +7,8 @@ import utils
 import logging
 import asyncio
 
+from aiohttp import web
+
 from orinoco import create_app
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
