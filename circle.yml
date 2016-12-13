@@ -1,0 +1,18 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - ./scripts/build.sh
+
+test:
+  override:
+    - echo "Nothing to do right now"
+
+deployment:
+  hub:
+    branch: /.*/
+    commands:
+      - curl https://raw.githubusercontent.com/quartictech/circleci-utils/develop/circleci-gcloud-login | bash
+      - ./scripts/push.sh

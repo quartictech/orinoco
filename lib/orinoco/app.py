@@ -1,5 +1,5 @@
 from . import backends
-from kafka import KafkaProducer
+#from kafka import KafkaProducer
 from aiohttp import web
 import asyncio
 
