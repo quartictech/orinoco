@@ -18,6 +18,7 @@ class App(object):
         self.generator = generator
         args = self.parse_args()
         self.port = args.port
+        self.app = web.Application()
 
     def parse_args(self):
         parser = argparse.ArgumentParser(
@@ -39,19 +40,19 @@ class App(object):
             "message_count": self.count
         }))
 
+
+    async def start_background_tasks(self, app):
+        app['main_loop'] = app.loop.create_task(self.run_async())
+
+    async def cleanup_background_tasks(self, app):
+        app['main_loop'].cancel()
+
+
     def run(self):
-        app = web.Application()
+        self.app.on_startup.append(self.start_background_tasks)
+        self.app.on_cleanup.append(self.cleanup_background_tasks)
 
-        async def start_background_tasks(app):
-            app['main_loop'] = app.loop.create_task(self.run_async())
-
-        async def cleanup_background_tasks(app):
-            app['main_loop'].cancel()
-
-        app.on_startup.append(start_background_tasks)
-        app.on_cleanup.append(cleanup_background_tasks)
-
-        app.router.add_get('/' + self.name +'/healthcheck', self.status)
-        resource = app.router.add_resource('/' + self.name, name=self.name)
+        self.app.router.add_get('/' + self.name +'/healthcheck', self.status)
+        resource = self.app.router.add_resource('/' + self.name, name=self.name)
         self.backend.register(resource)
-        web.run_app(app, port=self.port)
+        web.run_app(self.app, port=self.port)

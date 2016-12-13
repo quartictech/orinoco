@@ -5,17 +5,13 @@ import json
 import geojson
 import utils
 import logging
-
-from aiohttp import web
 import asyncio
+
+from orinoco import create_app
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
-websockets = set()
-
-async def send_event(event):
-    for ws in websockets:
-        ws.send_str(json.dumps(event))
+queue = asyncio.Queue()
 
 async def upload_handler(request):
     data = await request.text()
@@ -33,35 +29,19 @@ async def upload_handler(request):
         return web.HTTPBadRequest()
 
     logging.info("Processed {0} features".format(len(features)))
-    await send_event({
+    queue.put_nowait({
         'timestamp' : 0,
         'featureCollection' : feature_collection
     })
 
     return web.Response(text=json.dumps(ret))
 
-async def websocket_handler(request):
-    logging.info("Registering websocket connection")
-    global websockets
-
-    ws = web.WebSocketResponse()
-    await ws.prepare(request)
-    websockets.add(ws)
-
-    async for msg in ws:
-        pass
-
-    logging.info("Unregistering websocket connection")
-    websockets.remove(ws)
-
-    return ws
-
-async def status(request):
-    return web.Response(text="Sweet")
+async def main_loop():
+    while True:
+        item = await queue.get()
+        yield item
 
 if __name__ == "__main__":
-    app = web.Application()
-    app.router.add_get('/healthcheck', status)
-    app.router.add_get('/tracker', websocket_handler)
-    app.router.add_post('/upload', upload_handler)
-    web.run_app(app)
+    app = create_app("tracker", main_loop)
+    app.app.router.add_post('/upload', upload_handler)
+    app.run()
