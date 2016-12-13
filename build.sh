@@ -8,7 +8,7 @@ docker build -t orinoco .
 
 function build {
   docker build -t $QUARTIC_DOCKER_REPOSITORY/$1:$VERSION ./$1
-  docker push $QUARTIC_DOCKER_REPOSITORY/31:$VERSION
+  docker push $QUARTIC_DOCKER_REPOSITORY/$1:$VERSION
 }
 
 build national-grid
