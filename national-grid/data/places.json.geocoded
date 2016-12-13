@@ -1,0 +1,566 @@
+{
+ "TEESSIDE BP": {
+  "name": "TEESSIDE BP",
+  "geocode": {
+   "place_name": "Teesside, South Tees Business Centre/Pudlers Rd, Redcar, Redcar and Cleveland TS6 6TL United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.174233,
+     54.581216
+    ]
+   }
+  }
+ },
+ "HILLTOP": {
+  "name": "HILLTOP",
+  "address": "HILLTOP FARM GAS STORAGE FACILITY, SCHOOL LANE, WARMINGHAM, CHESHIRE, CW11 3QN",
+  "geocode": {
+   "place_name": "School Lane, Warmingham, Cheshire East CW11 3QL, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.432824,
+     53.149455
+    ]
+   }
+  }
+ },
+ "BARROW TERMINAL": {
+  "name": "BARROW TERMINAL",
+  "address": "Rampside Road (A5087), Barrow-in-Furness, LA13 0QU",
+  "geocode": {
+   "place_name": "A5087, Barrow-in-Furness, Cumbria LA13 0SX, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -3.1895568,
+     54.1108038
+    ]
+   }
+  }
+ },
+ "BACTON SEAL": {
+  "name": "BACTON SEAL",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "BARROW SOUTH": {
+  "name": "BARROW SOUTH",
+  "address": "Rampside Road (A5087), Barrow-in-Furness, LA13 0QU",
+  "geocode": {
+   "place_name": "A5087, Barrow-in-Furness, Cumbria LA13 0SX, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -3.1895568,
+     54.1108038
+    ]
+   }
+  }
+ },
+ "THEDDLETHORPE": {
+  "name": "THEDDLETHORPE",
+  "geocode": {
+   "place_name": "Theddlethorpe Saint Helen, Lincolnshire, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.2162,
+     53.3646
+    ]
+   }
+  }
+ },
+ "ISLE OF GRAIN TERMINAL": {
+  "name": "ISLE OF GRAIN TERMINAL",
+  "address": "Isle of Grain Road, Rochester ME3 0AB",
+  "geocode": {
+   "place_name": "ME3 0AB, Medway, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.678752671865983,
+     51.448018922749
+    ]
+   }
+  }
+ },
+ "BACTON IC": {
+  "name": "BACTON IC",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "AVONMOUTH": {
+  "name": "AVONMOUTH",
+  "geocode": {
+   "place_name": "Avonmouth, City of Bristol, City of Bristol BS11 9FE United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.699,
+     51.501
+    ]
+   }
+  }
+ },
+ "GRAIN NTS 1": {
+  "name": "GRAIN NTS 1",
+  "address": "Isle of Grain Road, Rochester ME3 0AB",
+  "geocode": {
+   "place_name": "ME3 0AB, Medway, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.678752671865983,
+     51.448018922749
+    ]
+   }
+  }
+ },
+ "MILFORD HAVEN - DRAGON": {
+  "name": "MILFORD HAVEN - DRAGON",
+  "geocode": {
+   "place_name": "Milford Haven, Sir Benfro, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -5.0341,
+     51.7128
+    ]
+   }
+  }
+ },
+ "HOLE HOUSE FARM": {
+  "name": "HOLE HOUSE FARM",
+  "geocode": {
+   "place_name": "Hole House Farm, Barton, Cumbria CA10 2NG United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.81059,
+     54.617064
+    ]
+   }
+  }
+ },
+ "ST FERGUS NSMP": {
+  "name": "ST FERGUS NSMP",
+  "address": "St Fergus, Aberdeenshire",
+  "geocode": {
+   "place_name": "St Fergus, Aberdeenshire, Aberdeenshire AB42 3HY United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.835231,
+     57.557232
+    ]
+   }
+  }
+ },
+ "HOLFORD": {
+  "name": "HOLFORD",
+  "address": "Byley, Cheshire",
+  "geocode": {
+   "place_name": "Byley, Cheshire West and Chester, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.4367,
+     53.2177
+    ]
+   }
+  }
+ },
+ "EASINGTON DIMLINGTON": {
+  "name": "EASINGTON DIMLINGTON",
+  "geocode": {
+   "place_name": "Dimlington Road, Easington, East Riding of Yorkshire HU12 0TQ, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.11502,
+     53.656048
+    ]
+   }
+  }
+ },
+ "PARTINGTON": {
+  "name": "PARTINGTON",
+  "geocode": {
+   "place_name": "Partington, Trafford, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.4281,
+     53.4188
+    ]
+   }
+  }
+ },
+ "EASINGTON ROUGH": {
+  "name": "EASINGTON ROUGH",
+  "geocode": {
+   "place_name": "Rough, Easington, East Riding of Yorkshire HU12 0SX United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.113889,
+     53.6603
+    ]
+   }
+  }
+ },
+ "HORNSEA": {
+  "name": "HORNSEA",
+  "geocode": {
+   "place_name": "Hornsea, East Riding of Yorkshire, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -0.181,
+     53.9115
+    ]
+   }
+  }
+ },
+ "TEESSIDE PX": {
+  "name": "TEESSIDE PX",
+  "geocode": {
+   "place_name": "Teesside, South Tees Business Centre/Pudlers Rd, Redcar, Redcar and Cleveland TS6 6TL United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.174233,
+     54.581216
+    ]
+   }
+  }
+ },
+ "BACTON SHELL": {
+  "name": "BACTON SHELL",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "DYNEVOR ARMS": {
+  "name": "DYNEVOR ARMS",
+  "geocode": {
+   "place_name": "Dynevor Arms, Ash Rd, Troedyrhiw, Merthyr Tudful CF48 4HH United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -3.352345,
+     51.712771
+    ]
+   }
+  }
+ },
+ "GLENMAVIS LNG": {
+  "name": "GLENMAVIS LNG",
+  "geocode": {
+   "place_name": "Glenmavis, West Lothian, West Lothian EH48 4LJ United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -3.635665,
+     55.909499
+    ]
+   }
+  }
+ },
+ "EASINGTON LANGELED": {
+  "name": "EASINGTON LANGELED",
+  "geocode": {
+   "place_name": "Easington, Northumberland, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.7931,
+     55.6028
+    ]
+   }
+  }
+ },
+ "GLENMAVIS": {
+  "name": "GLENMAVIS",
+  "geocode": {
+   "place_name": "Glenmavis, West Lothian, West Lothian EH48 4LJ United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -3.635665,
+     55.909499
+    ]
+   }
+  }
+ },
+ "GRAIN NTS 2": {
+  "name": "GRAIN NTS 2",
+  "address": "Isle of Grain Road, Rochester ME3 0AB",
+  "geocode": {
+   "place_name": "ME3 0AB, Medway, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.678752671865983,
+     51.448018922749
+    ]
+   }
+  }
+ },
+ "DYNEVOR LNG": {
+  "name": "DYNEVOR LNG",
+  "geocode": {
+   "place_name": "Dynevor Street, Darran Valley, Caerffili CF81 9NB, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -3.300561,
+     51.740784
+    ]
+   }
+  }
+ },
+ "ST FERGUS MOBIL": {
+  "name": "ST FERGUS MOBIL",
+  "address": "St Fergus, Aberdeenshire",
+  "geocode": {
+   "place_name": "St Fergus, Aberdeenshire, Aberdeenshire AB42 3HY United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.835231,
+     57.557232
+    ]
+   }
+  }
+ },
+ "MILFORD HAVEN TERMINAL": {
+  "name": "MILFORD HAVEN TERMINAL",
+  "geocode": {
+   "place_name": "Milford Haven, Sir Benfro, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -5.0341,
+     51.7128
+    ]
+   }
+  }
+ },
+ "AVONMOUTH LNG": {
+  "name": "AVONMOUTH LNG",
+  "geocode": {
+   "place_name": "Avonmouth, City of Bristol, City of Bristol BS11 9FE United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.699,
+     51.501
+    ]
+   }
+  }
+ },
+ "BACTON IPs Terminal": {
+  "name": "BACTON IPs Terminal",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "TEESSIDE TERMINAL": {
+  "name": "TEESSIDE TERMINAL",
+  "geocode": {
+   "place_name": "Teesside, South Tees Business Centre/Pudlers Rd, Redcar, Redcar and Cleveland TS6 6TL United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.174233,
+     54.581216
+    ]
+   }
+  }
+ },
+ "ST FERGUS TERMINAL": {
+  "name": "ST FERGUS TERMINAL",
+  "address": "St Fergus, Aberdeenshire",
+  "geocode": {
+   "place_name": "St Fergus, Aberdeenshire, Aberdeenshire AB42 3HY United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.835231,
+     57.557232
+    ]
+   }
+  }
+ },
+ "PARTINGTON LNG": {
+  "name": "PARTINGTON LNG",
+  "geocode": {
+   "place_name": "Partington, Trafford, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.4281,
+     53.4188
+    ]
+   }
+  }
+ },
+ "BACTON UKCS Terminal": {
+  "name": "BACTON UKCS Terminal",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "ST FERGUS SHELL": {
+  "name": "ST FERGUS SHELL",
+  "geocode": {
+   "place_name": "St Fergus, Aberdeenshire, Aberdeenshire AB42 3HY United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.835231,
+     57.557232
+    ]
+   }
+  }
+ },
+ "BACTON BBL": {
+  "name": "BACTON BBL",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "MILFORD HAVEN - SOUTH HOOK": {
+  "name": "MILFORD HAVEN - SOUTH HOOK",
+  "geocode": {
+   "place_name": "South Hook Road, Milford Haven, Sir Benfro SA73 3RU, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -5.0646401,
+     51.7080867
+    ]
+   }
+  }
+ },
+ "BACTON PERENCO": {
+  "name": "BACTON PERENCO",
+  "address": "Bacton, NR12 0JE",
+  "geocode": {
+   "place_name": "NR12 0JE, Norfolk, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.46247198537149,
+     52.8578380992425
+    ]
+   }
+  }
+ },
+ "EASINGTON TERMINAL": {
+  "name": "EASINGTON TERMINAL",
+  "geocode": {
+   "place_name": "Easington Gas Terminal, Easington, East Riding of Yorkshire HU12 0TQ United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.11978,
+     53.6548
+    ]
+   }
+  }
+ },
+ "ALDBROUGH": {
+  "name": "ALDBROUGH",
+  "geocode": {
+   "place_name": "Aldbrough, East Riding of Yorkshire, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -0.1252,
+     53.8273
+    ]
+   }
+  }
+ },
+ "THEDDLETHORPE TERMINAL": {
+  "name": "THEDDLETHORPE TERMINAL",
+  "geocode": {
+   "place_name": "Theddlethorpe Gas Terminal, Theddlethorpe Saint Helen, Lincolnshire LN12 1QF United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.233,
+     53.362
+    ]
+   }
+  }
+ },
+ "STUBLACH": {
+  "name": "STUBLACH",
+  "address": "Northwich, Cheshire",
+  "geocode": {
+   "place_name": "Northwich, Cheshire West and Chester, United Kingdom",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.5157,
+     53.2558
+    ]
+   }
+  }
+ }
+}
