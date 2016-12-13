@@ -7,4 +7,7 @@ setup(name='orinoco',
       author_email='alex@quartic.io',
       license='MIT',
       packages=['orinoco'],
+      install_requires=[
+          'aiohttp'
+      ],
       zip_safe=False)
