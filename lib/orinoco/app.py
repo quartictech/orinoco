@@ -29,17 +29,21 @@ class App(object):
 
     async def run_async(self):
         #producer = KafkaProducer(bootstrap_servers="172.19.0.3:9092", acks=0)
-        async for message in self.generator():
-            if self.count % 10000 == 0:
-                print(self.count)
-            self.count += 1
-            await self.backend.send(message)
+        while True:
+            try:
+                async for message in self.generator():
+                    if self.count % 10000 == 0:
+                        print(self.count)
+                    self.count += 1
+                    await self.backend.send(message)
+            except Exception as e:
+                logging.error("exception while running generator: %s", e)
+
 
     async def status(self, request):
         return web.Response(text=json.dumps({
             "message_count": self.count
         }))
-
 
     async def start_background_tasks(self, app):
         app['main_loop'] = app.loop.create_task(self.run_async())

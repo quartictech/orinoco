@@ -1,4 +1,5 @@
 import logging
+import json
 from aiohttp import web
 
 class Backend(object):
@@ -7,7 +8,7 @@ class Backend(object):
 
 class WebsocketBackend(Backend):
     def __init__(self):
-        self.websockets = []
+        self.websockets = set()
 
     async def _websocket_handler(self, request):
         logging.info("Registering websocket connection")
@@ -20,7 +21,7 @@ class WebsocketBackend(Backend):
             pass
 
         logging.info("Unregistering websocket connection")
-        websockets.remove(ws)
+        self.websockets.remove(ws)
         return ws
 
     async def send(self, message):
