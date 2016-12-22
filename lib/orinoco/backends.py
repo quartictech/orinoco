@@ -26,7 +26,7 @@ class WebsocketBackend(Backend):
 
     async def send(self, message):
         for ws in self.websockets:
-            ws.send_str(json.dumps(message))
+            await ws.send_str(json.dumps(message))
 
     def register(self, resource):
         resource.add_route('GET', self._websocket_handler)
