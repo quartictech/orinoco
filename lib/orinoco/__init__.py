@@ -1,5 +1,5 @@
 from .app import App
 from .backends import WebsocketBackend
 
-def create_app(name, generator):
-    return App(name, WebsocketBackend(), generator)
+def create_app(name, generator, metrics=None):
+    return App(name, WebsocketBackend(), generator, metrics)

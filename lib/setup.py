@@ -8,6 +8,7 @@ setup(name='orinoco',
       license='MIT',
       packages=['orinoco'],
       install_requires=[
-          'aiohttp'
+          'aiohttp',
+          'pyformance'
       ],
       zip_safe=False)
