@@ -7,6 +7,7 @@ import logging
 import sys
 import json
 import argparse
+import traceback
 
 from pyformance.registry import MetricsRegistry
 from pyformance.reporters import ConsoleReporter
@@ -55,6 +56,9 @@ class App(object):
                     await self.backend.send(message)
             except Exception as e:
                 logging.error("exception while running generator: %s", e)
+                traceback.print_exc()
+            # if we hit an exception, wait sensibly before continuing    
+            await asyncio.sleep(5)
 
 
     async def status(self, request):
