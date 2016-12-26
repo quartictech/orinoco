@@ -7,7 +7,6 @@ import logging
 import sys
 import json
 import argparse
-import traceback
 
 from pyformance.registry import MetricsRegistry
 from pyformance.reporters import ConsoleReporter
@@ -52,12 +51,11 @@ class App(object):
                     features.mark(len(message["featureCollection"]["features"]))
 
                     if count.get_count() % 10000 == 0:
-                        print(count.get_count())
+                        logging.info("processed %d messages", count.get_count())
                     await self.backend.send(message)
-            except Exception as e:
-                logging.error("exception while running generator: %s", e)
-                traceback.print_exc()
-            # if we hit an exception, wait sensibly before continuing    
+            except Exception:
+                logging.exception("Exception while running generator")
+            # if we hit an exception, wait sensibly before continuing
             await asyncio.sleep(5)
 
 
