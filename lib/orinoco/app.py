@@ -8,17 +8,26 @@ import sys
 import json
 import argparse
 
+from pyformance.registry import MetricsRegistry
+from pyformance.reporters import ConsoleReporter
+
 logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
 class App(object):
-    def __init__(self, name, backend, generator):
-        self.count = 0
+    def __init__(self, name, backend, generator, metrics):
         self.name = name
         self.backend = backend
         self.generator = generator
         args = self.parse_args()
         self.port = args.port
         self.app = web.Application()
+        self.fw_metrics = MetricsRegistry()
+        reporter = ConsoleReporter(registry=self.fw_metrics)
+        reporter.start()
+        self.app_metrics = metrics
+        if self.app_metrics:
+            reporter = ConsoleReporter(registry=self.app_metrics)
+            reporter.start()
 
     def parse_args(self):
         parser = argparse.ArgumentParser(
@@ -27,23 +36,38 @@ class App(object):
         parser.add_argument("-p", "--port", type=int, help="Port to serve on", default=8080)
         return parser.parse_args()
 
+    def validate(self, message):
+        assert "featureCollection" in message
+
     async def run_async(self):
-        #producer = KafkaProducer(bootstrap_servers="172.19.0.3:9092", acks=0)
+        count = self.fw_metrics.meter("messages")
+        features = self.fw_metrics.meter("features")
         while True:
             try:
                 async for message in self.generator():
-                    if self.count % 10000 == 0:
-                        print(self.count)
-                    self.count += 1
+                    count.mark()
+                    self.validate(message)
+
+                    features.mark(len(message["featureCollection"]["features"]))
+
+                    if count.get_count() % 10000 == 0:
+                        logging.info("processed %d messages", count.get_count())
                     await self.backend.send(message)
-            except Exception as e:
-                logging.error("exception while running generator: %s", e)
+            except Exception:
+                logging.exception("Exception while running generator")
+            # if we hit an exception, wait sensibly before continuing
+            await asyncio.sleep(5)
 
 
     async def status(self, request):
-        return web.Response(text=json.dumps({
-            "message_count": self.count
-        }))
+        status = {
+            "orinoco": self.fw_metrics.dump_metrics()
+        }
+
+        if self.app_metrics:
+            status[self.name] = self.app_metrics.dump_metrics()
+
+        return web.Response(text=json.dumps(status, indent=1))
 
     async def start_background_tasks(self, app):
         app['main_loop'] = app.loop.create_task(self.run_async())

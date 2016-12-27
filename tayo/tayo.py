@@ -12,6 +12,8 @@ from pprint import pprint
 
 from orinoco import create_app
 
+from pyformance.registry import MetricsRegistry
+
 
 APP_ID = "860e7675"
 APP_KEY = "1d36a20279e6ac727ddfdcaeba2e97ea"
@@ -21,6 +23,8 @@ ANIMATION_DT = 3
 LINE_IDS = ["88", "15", "9"]
 
 ##############################################################################
+
+stats = MetricsRegistry()
 
 class Api:
     def __init__(self):
@@ -33,6 +37,7 @@ class Api:
         return await self._request("/line/{0}/arrivals".format(line_id))
 
     async def _request(self, path, **kwargs):
+        stats.meter("api_calls").mark()
         url = "https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY)
         async with self.session.get(url, timeout=20) as r:
             r.raise_for_status()
@@ -253,5 +258,5 @@ async def main_loop():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
-    app = create_app("tayo", main_loop)
+    app = create_app("tayo", main_loop, metrics=stats)
     app.run()

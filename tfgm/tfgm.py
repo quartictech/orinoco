@@ -33,7 +33,7 @@ def parse(data):
                 "type": "Feature",
                 "id": item["Id"],
                 "properties": properties,
-                "geometry": mapping(line)
+                "geometry": mapping(line.centroid)
             })
     logging.info("parsed %d features", len(features))
     return {
