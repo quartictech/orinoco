@@ -6,8 +6,9 @@ Mobile uploads should be directed at the `POST :8080/upload` endpoint.
 
 ## Running locally
 
-    # Set up Python3 virtualenv first
+    # Set up Python3.6 virtualenv first
     pip install -r requirements.txt
+    pip install ../orinoco/lib
     python tracker.py
 
 ## Building
