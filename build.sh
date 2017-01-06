@@ -14,3 +14,4 @@ function build {
 build national-grid
 build tracker
 build tayo
+build mock-tracker
