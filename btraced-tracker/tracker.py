@@ -44,6 +44,6 @@ async def main_loop():
         yield item
 
 if __name__ == "__main__":
-    app = create_app("tracker", main_loop)
+    app = create_app("btraced-tracker", main_loop)
     app.app.router.add_post('/upload', upload_handler)
     app.run()
