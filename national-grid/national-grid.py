@@ -8,6 +8,7 @@ import logging
 import os.path
 
 from orinoco import create_app
+from aiohttp.web import json_response
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
@@ -15,6 +16,12 @@ data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data", "p
 
 places = json.load(open(data_path))
 flows = defaultdict(dict)
+
+async def snapshot_handler(request):
+    out = {}
+    for k, v in flows.items():
+        out[k] = dict([(str(k), v2) for k, v2 in v.items()])
+    return json_response(out)
 
 def convert_time_series(d):
     for k, v in d.items():
@@ -71,4 +78,5 @@ async def main_loop():
 
 if __name__ == "__main__":
     app = create_app("national-grid", main_loop)
+    app.app.router.add_get('/snapshot', snapshot_handler)
     app.run()
