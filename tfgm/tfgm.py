@@ -11,7 +11,8 @@ from aiohttp import ClientSession
 
 from orinoco import create_app
 
-API_KEY = "59d6fca93351451f926abb841ee2f7bb"
+# Replace this with tfgm API Key
+API_KEY = None
 
 def parse(data):
     features = []

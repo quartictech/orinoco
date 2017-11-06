@@ -15,8 +15,9 @@ from orinoco import create_app
 from pyformance.registry import MetricsRegistry
 
 
-APP_ID = "860e7675"
-APP_KEY = "1d36a20279e6ac727ddfdcaeba2e97ea"
+# TODO: Replace these with TFL API ID/Key
+APP_ID = None
+APP_KEY = None
 
 API_DT = 10
 ANIMATION_DT = 3
